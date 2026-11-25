@@ -15,13 +15,30 @@ Deadline: **Tue 1 Dec 2026, 05:00 WIB**. Steps marked 👤 are Joe's
       register the app (nickname "Fieldnotes AI Web") and copy the
       `firebaseConfig` object it shows.
 
-## 2. Plug the config into the app (🤖)
+## 2. Plug the config into the app (🤖) — ✅ DONE 25 Nov 2026
 
-- [ ] Paste the real values into `src/firebase-config.js`
+- [x] Paste the real values into `src/firebase-config.js`
       (replace every `TODO_…`). The web config is not a secret — it is
       safe to commit — but no other keys ever go in the repo.
+      **Done:** project `fieldnotes-ai-2794e`, web app
+      `fieldnotes-ai-web`; production build re-run and verified — the
+      bundle contains the real project ID, so demo mode is off.
 - [ ] `npm run dev` and confirm the header pill says
       "Firebase: connected" and the demo banner is gone.
+      (Production build is served locally from `dist/` — see next steps.)
+
+### Next steps (exact order, as of 25 Nov 2026)
+
+- [ ] (a) Open the local URL (production build served from `dist/`),
+      and read the **App Check debug token** printed in the browser
+      console.
+- [ ] (b) Register that token in **Firebase Console → App Check → Apps
+      → fieldnotes-ai-web → Manage debug tokens**.
+- [ ] (c) **Go/no-go test:** a short note should return an **On-device**
+      badge where Chrome's Prompt API is available; a long log should
+      return a **Cloud** badge.
+- [ ] (d) Deploy to **Firebase Hosting**.
+- [ ] (e) Demo video + **Devpost submit before 1 Dec 05:00 WIB**.
 
 ## 3. App Check (👤 + 🤖)
 

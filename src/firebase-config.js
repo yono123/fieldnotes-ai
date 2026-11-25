@@ -1,25 +1,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Fieldnotes AI — Firebase project configuration
 //
-// TODO(Joe): Replace every "TODO_…" placeholder below with the real values
-// from your Firebase project:
+// Real config connected 25 Nov 2026: project "fieldnotes-ai"
+// (fieldnotes-ai-2794e), web app "fieldnotes-ai-web", values copied from
 //   Firebase Console → Project settings → General → "Your apps" → Web app →
 //   "Firebase SDK snippet" → Config.
 //
-// These values are NOT secret keys (Firebase web config is safe to commit),
-// but the repo ships with placeholders so no real project data is baked in
-// before Joe's project exists. While any value still starts with "TODO_",
-// the app runs in DEMO MODE: it loads, explains what is missing, and uses a
-// small local text tidy-up instead of calling Firebase AI Logic.
+// These values are NOT secret keys (Firebase web config is safe to commit).
+// If any value ever starts with "TODO_" again, the app runs in DEMO MODE:
+// it loads, explains what is missing, and uses a small local text tidy-up
+// instead of calling Firebase AI Logic.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const firebaseConfig = {
-  apiKey: "TODO_API_KEY",
-  authDomain: "TODO_PROJECT_ID.firebaseapp.com",
-  projectId: "TODO_PROJECT_ID",
-  storageBucket: "TODO_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "TODO_MESSAGING_SENDER_ID",
-  appId: "TODO_APP_ID",
+  apiKey: "AIzaSyB5LeQFytlHHmFqnqh_lb8_bL3D4fhyGjE",
+  authDomain: "fieldnotes-ai-2794e.firebaseapp.com",
+  projectId: "fieldnotes-ai-2794e",
+  storageBucket: "fieldnotes-ai-2794e.firebasestorage.app",
+  messagingSenderId: "119608711417",
+  appId: "1:119608711417:web:d4a623818cbabe7ec06a28",
 };
 
 // reCAPTCHA Enterprise site key for App Check (production).
