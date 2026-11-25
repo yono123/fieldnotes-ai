@@ -33,6 +33,8 @@ dist-ssr
 *-service-account*.json
 serviceAccountKey.json
 .firebase/
+# Local test screenshots (failure captures from the agent's sandbox runs) — kept locally only
+test-shots/
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
