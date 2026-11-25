@@ -60,10 +60,17 @@ through reCAPTCHA Enterprise instead.
 
 For the hosted site:
 
-- [ ] 👤 App Check → register **reCAPTCHA Enterprise** for the web app and
-      copy the site key.
-- [ ] 🤖 Put the site key in `appCheckSiteKey` in
-      `src/firebase-config.js`, rebuild, redeploy.
+- [x] 👤 App Check → register the attestation provider for the web app.
+      **Done 25 Nov 2026:** provider registered in Firebase Console →
+      App Check → Apps → fieldnotes-ai-web as **"Fraud Defense"
+      (formerly reCAPTCHA Enterprise)** — status **Registered**.
+      Site key: `6LdlGjEuAAAAAHye-Mu93qgJaQjPZnyPzB8w1JDP` (public site
+      key, safe to commit).
+- [x] 🤖 Site key recorded in `appCheckSiteKey` in
+      `src/firebase-config.js` (25 Nov 2026); `src/firebase.js` passes
+      it to `new ReCaptchaEnterpriseProvider(appCheckSiteKey)` on
+      non-localhost hosts. Production build re-run — verified the
+      bundle contains the site key. (Redeploy still pending — see §5.)
 
 ## 4. Prove the hybrid path (🤖) — go/no-go checkpoint: 27 Nov 2026 WIB
 
@@ -81,10 +88,21 @@ For the hosted site:
 
 ## 5. Hosting (🤖, needs 👤 project from step 1)
 
-- [ ] `npm run build`
-- [ ] Deploy `dist/` to **Firebase Hosting** (`firebase deploy --only hosting`
-      from Joe's project) and note the live URL for the Devpost form.
-- [ ] Smoke-test the hosted URL end-to-end (short note + long log).
+Prepared 25 Nov 2026: `firebase.json` (public dir `dist`, SPA rewrite
+to `/index.html`, immutable 1-year cache for `/assets/**`, `no-cache`
+for `index.html`) and `.firebaserc` (default project
+`fieldnotes-ai-2794e`) are in the repo root.
+
+- [x] `npm run build` — succeeds; bundle verified to contain the
+      App Check site key.
+- [ ] 🔑 **Firebase CLI login** — in progress with Joe (the CLI must be
+      signed in as Joe; he completes the auth step himself).
+- [ ] Deploy: `firebase deploy --only hosting` from the project root,
+      then note the live URL for the Devpost form.
+- [ ] **Public URL badge test:** open the hosted URL — tidy a short
+      note → badge **On-device** (Chrome with Prompt API); paste a
+      long log → badge **Cloud**. Also smoke-test end-to-end.
+- [ ] Demo video (see §7) and **Devpost submit before 1 Dec 05:00 WIB**.
 
 ## 6. Optional next step — Firestore sync (🤖)
 

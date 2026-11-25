@@ -22,11 +22,13 @@ export const firebaseConfig = {
 };
 
 // reCAPTCHA Enterprise site key for App Check (production).
-// Firebase Console → App Check → register the web app with
-// reCAPTCHA Enterprise, then paste the site key here.
+// Registered 25 Nov 2026: Firebase Console → App Check → Apps →
+// fieldnotes-ai-web → provider "Fraud Defense" (formerly reCAPTCHA
+// Enterprise) — status Registered. This is the public site key, safe
+// to commit.
 // On localhost the app uses the App Check *debug provider* instead
-// (see src/firebase.js), so this is only needed once the app is hosted.
-export const appCheckSiteKey = "TODO_RECAPTCHA_ENTERPRISE_SITE_KEY";
+// (see src/firebase.js), so this is only used once the app is hosted.
+export const appCheckSiteKey = "6LdlGjEuAAAAAHye-Mu93qgJaQjPZnyPzB8w1JDP";
 
 /** True only when Joe's real Firebase config has been plugged in. */
 export function isFirebaseConfigured() {
