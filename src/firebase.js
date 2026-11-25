@@ -4,10 +4,9 @@
 // Wires up, in order:
 //   1. initializeApp() with Joe's project config (src/firebase-config.js)
 //   2. Firebase App Check — REQUIRED by Firebase AI Logic. On localhost we
-//      use the debug provider (self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-//      makes the SDK print a debug token to the browser console; register
-//      that token in Firebase Console → App Check → Apps → Manage debug
-//      tokens). On a hosted domain we use reCAPTCHA Enterprise.
+//      use the debug provider with a fixed debug token (see below) that is
+//      registered in Firebase Console → App Check → Apps → Manage debug
+//      tokens. On a hosted domain we use reCAPTCHA Enterprise.
 //   3. Firebase AI Logic (the `firebase/ai` module) with the Gemini
 //      Developer API backend.
 //
@@ -45,8 +44,12 @@ if (firebaseReady) {
       window.location.hostname,
     );
     if (isLocalhost) {
+      // Fixed local debug token, registered in Firebase Console App Check
+      // for this project; localhost only, never used in production (hosted
+      // builds use reCAPTCHA Enterprise).
       // eslint-disable-next-line no-restricted-globals
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN =
+        "8fa2aadb-bf48-43e9-bdd3-ae1f63b3f805";
     }
 
     if (isLocalhost || !appCheckSiteKey.startsWith("TODO_")) {

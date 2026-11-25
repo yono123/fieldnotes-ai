@@ -29,11 +29,12 @@ Deadline: **Tue 1 Dec 2026, 05:00 WIB**. Steps marked 👤 are Joe's
 
 ### Next steps (exact order, as of 25 Nov 2026)
 
-- [ ] (a) Open the local URL (production build served from `dist/`),
-      and read the **App Check debug token** printed in the browser
-      console.
-- [ ] (b) Register that token in **Firebase Console → App Check → Apps
-      → fieldnotes-ai-web → Manage debug tokens**.
+- [ ] (a) Open the local URL (production build served from `dist/`).
+      The app pins a **fixed App Check debug token** for localhost —
+      `8fa2aadb-bf48-43e9-bdd3-ae1f63b3f805` (set in `src/firebase.js`,
+      localhost only; hosted builds use reCAPTCHA Enterprise).
+- [ ] (b) Register that fixed token in **Firebase Console → App Check
+      → Apps → fieldnotes-ai-web → Manage debug tokens**.
 - [ ] (c) **Go/no-go test:** a short note should return an **On-device**
       badge where Chrome's Prompt API is available; a long log should
       return a **Cloud** badge.
@@ -43,12 +44,17 @@ Deadline: **Tue 1 Dec 2026, 05:00 WIB**. Steps marked 👤 are Joe's
 ## 3. App Check (👤 + 🤖)
 
 Local development uses the **debug provider** (accepted for hackathon
-submissions):
+submissions) with a **fixed debug token** pinned in `src/firebase.js`:
+`8fa2aadb-bf48-43e9-bdd3-ae1f63b3f805`. It applies only on
+`localhost`/`127.0.0.1` — production (hosted) builds never use it and go
+through reCAPTCHA Enterprise instead.
 
-- [ ] 🤖 Run locally once; the browser console prints
-      `AppCheck debug token: "…"`.
-- [ ] 👤 Firebase Console → **App Check → Apps → (web app) → Manage debug
-      tokens** → register that token.
+- [x] 🤖 Pin the fixed debug token in `src/firebase.js` (done 25 Nov
+      2026; production build re-run, served bundle verified to contain
+      the token).
+- [ ] 👤 Firebase Console → **App Check → Apps → fieldnotes-ai-web →
+      Manage debug tokens** → register the fixed token above
+      (registration in progress via browser).
 - [ ] 🤖 Re-run locally and make a test request — it should succeed
       instead of failing App Check enforcement.
 
