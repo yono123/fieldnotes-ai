@@ -126,20 +126,87 @@ export function routeFor(text) {
 
 const ENTRY_SCHEMA_HINT = [
   "Respond with ONLY a JSON object (no markdown fences) of this shape:",
-  '{"date": "YYYY-MM-DD", "summary": "one or two clean sentences",',
+  '{"summary": "one or two clean sentences",',
   ' "plants": ["plant or area mentioned"], "tasks": ["task done or to do"],',
   ' "issues": ["problem, pest, damage or follow-up"]}',
-  "Use today's date if the note gives none. Use empty arrays when a",
-  "category is absent.",
+  "Do NOT output a date — the app stamps each entry with the correct date",
+  "itself, and a model-supplied date would be a guess. Use empty arrays",
+  "when a category is absent.",
 ].join("\n");
 
-function parseEntryJson(raw, fallbackDate) {
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// ── Entry dating ────────────────────────────────────────────────────────────
+// The model must never supply an entry's date: it has no reliable notion of
+// "today" and will happily invent a plausible one (live testing on
+// 2026-11-25 produced entries dated 2024-05-20/21). So the date is derived
+// here, client-side, from exactly two trustworthy sources:
+//   1. an explicit calendar date written in the user's own note text that
+//      this parser can verify character-for-character, or
+//   2. the actual current date.
+// Anything ambiguous (e.g. 03/04/2026 — day-first or month-first?) falls
+// back to today.
+
+const MONTH_INDEX = {
+  january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+  july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
+  jan: 0, feb: 1, mar: 2, apr: 3, jun: 5, jul: 6, aug: 7, sept: 8, sep: 8,
+  oct: 9, nov: 10, dec: 11,
+};
+const MONTH_ALT = Object.keys(MONTH_INDEX)
+  .sort((a, b) => b.length - a.length)
+  .join("|");
+
+function toIsoDate(year, monthIndex, day) {
+  const d = new Date(Date.UTC(year, monthIndex, day));
+  // Reject overflow dates like 31 February, which Date would roll over.
+  if (
+    d.getUTCFullYear() !== year ||
+    d.getUTCMonth() !== monthIndex ||
+    d.getUTCDate() !== day
+  ) {
+    return null;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+/** ISO date explicitly written in the note text, or null if none is verifiable. */
+function extractExplicitDate(text) {
+  let m = text.match(/\b(\d{4})-(\d{2})-(\d{2})\b/); // 2026-11-25
+  if (m) return toIsoDate(+m[1], +m[2] - 1, +m[3]);
+
+  m = text.match(
+    new RegExp(`\\b(\\d{1,2})\\s+(${MONTH_ALT})\\.?\\s+(\\d{4})\\b`, "i"),
+  ); // 25 November 2026
+  if (m) return toIsoDate(+m[3], MONTH_INDEX[m[2].toLowerCase()], +m[1]);
+
+  m = text.match(
+    new RegExp(`\\b(${MONTH_ALT})\\.?\\s+(\\d{1,2}),?\\s+(\\d{4})\\b`, "i"),
+  ); // November 25, 2026
+  if (m) return toIsoDate(+m[3], MONTH_INDEX[m[1].toLowerCase()], +m[2]);
+
+  m = text.match(/\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/); // 25/11/2026 or 11/25/2026
+  if (m) {
+    const first = +m[1];
+    const second = +m[2];
+    if (first > 12 && second <= 12) return toIsoDate(+m[3], second - 1, first);
+    if (second > 12 && first <= 12) return toIsoDate(+m[3], first - 1, second);
+    return null; // ambiguous ordering — caller falls back to today
+  }
+  return null;
+}
+
+function parseEntryJson(raw, rawText) {
+  // Never trust a date from the model; see "Entry dating" above.
+  const date = extractExplicitDate(rawText) || todayIso();
   try {
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("no JSON object in response");
     const parsed = JSON.parse(match[0]);
     return {
-      date: parsed.date || fallbackDate,
+      date,
       summary: parsed.summary || raw.trim(),
       plants: Array.isArray(parsed.plants) ? parsed.plants : [],
       tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
@@ -148,17 +215,13 @@ function parseEntryJson(raw, fallbackDate) {
   } catch {
     // Model didn't follow the schema — keep its text as the summary.
     return {
-      date: fallbackDate,
+      date,
       summary: raw.trim(),
       plants: [],
       tasks: [],
       issues: [],
     };
   }
-}
-
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
 }
 
 /**
@@ -180,7 +243,7 @@ export async function tidyNote(rawText) {
       : `Tidy this short field note into a structured log entry.\n${ENTRY_SCHEMA_HINT}\n\nField note:\n${text}`;
 
   const result = await model.generateContent(prompt);
-  const entry = parseEntryJson(result.response.text(), todayIso());
+  const entry = parseEntryJson(result.response.text(), text);
   // inferenceSource is the SDK's own report of the path that served us.
   return { entry, source: result.response.inferenceSource || "IN_CLOUD" };
 }
