@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fieldnotes AI — a gardener's hybrid-AI field log</title>
+    <meta
+      name="description"
+      content="Fieldnotes AI tidies a gardener's rough field notes with Firebase AI Logic hybrid inference: Gemini Nano on-device in Chrome for short notes, cloud Gemini for long logs."
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🌱</span>
+        <div>
+          <h1>Fieldnotes AI</h1>
+          <p class="tagline">Rough garden notes in — a clean field log out.</p>
+        </div>
+      </div>
+      <div class="status-stack">
+        <span id="device-status" class="pill pill-neutral"
+          >On-device model: checking…</span
+        >
+        <span id="firebase-status" class="pill pill-neutral">Firebase: …</span>
+      </div>
+    </header>
+
+    <div id="demo-banner" class="banner" hidden>
+      <strong>Demo mode.</strong> Firebase isn't configured yet, so results
+      below come from a simple local tidy-up — <em>not</em> from AI. Add Joe's
+      Firebase project config in <code>src/firebase-config.js</code> (see
+      <code>SETUP.md</code>) to switch on real hybrid inference.
+    </div>
+
+    <main>
+      <section class="card">
+        <h2>Today's field note</h2>
+        <p class="hint">
+          Type or paste what happened in the garden — spelling and shorthand
+          are fine. Short notes are tidied
+          <strong>on-device</strong> (Gemini Nano in Chrome) when available;
+          long logs are automatically <strong>escalated to the cloud</strong>
+          model for a structured summary. Every result shows which path
+          handled it.
+        </p>
+        <label class="visually-hidden" for="note-input">Field note</label>
+        <textarea
+          id="note-input"
+          rows="5"
+          placeholder="e.g. pruned the snow bush by the gate, yellow flowers near the fence need water, found a snake skin by the compost — keep an eye out"
+        ></textarea>
+        <div class="row">
+          <span id="char-count" class="muted">0 characters</span>
+          <span id="route-preview" class="muted"></span>
+        </div>
+        <div class="row actions">
+          <button id="tidy-btn" class="primary">Tidy up with hybrid AI</button>
+          <button id="sample-btn" class="ghost">Load a sample note</button>
+        </div>
+        <p id="progress" class="muted" role="status"></p>
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+
+      <section class="card">
+        <div class="row spread">
+          <h2>Field log</h2>
+          <div class="row actions">
+            <button id="report-btn">Weekly report (cloud)</button>
+            <button id="clear-btn" class="ghost danger">Clear log</button>
+          </div>
+        </div>
+        <div id="report-output" class="report" hidden></div>
+        <ul id="entries" class="entries"></ul>
+        <p id="empty-state" class="muted">
+          No entries yet. Tidy your first note and it will appear here.
+        </p>
+      </section>
+
+      <section class="card explainer">
+        <h2>How the hybrid routing works</h2>
+        <ol>
+          <li>
+            <strong>Short note → on-device first.</strong> Firebase AI Logic
+            (<code>firebase/ai</code>) creates a model with
+            <code>InferenceMode.PREFER_ON_DEVICE</code>: Gemini Nano in Chrome
+            handles it locally — fast, private, works with no signal in the
+            garden. If Nano isn't available, the SDK falls back to the cloud
+            automatically.
+          </li>
+          <li>
+            <strong>Long log → cloud.</strong> Past
+            <span id="threshold-label">600 characters / 90 words</span>, the
+            app escalates to a cloud Gemini model
+            (<code>PREFER_IN_CLOUD</code>) for a fuller structured summary
+            (date, plants, tasks, issues).
+          </li>
+          <li>
+            <strong>The badge never lies.</strong> Each result's badge comes
+            from <code>response.inferenceSource</code> — the SDK's own report
+            of whether the answer was generated <em>on-device</em> or
+            <em>in the cloud</em>.
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Built with Firebase AI Logic hybrid inference for #BuildHybridAI 2026.
+        Free to use; notes are stored only in this browser.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
